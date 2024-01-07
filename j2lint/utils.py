@@ -235,8 +235,12 @@ def get_jinja_variables(text: str) -> list[str]:
     Returns:
         [list]: returns list of jinja variables
     """
-    regex_pattern = regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
-    return [line.group(2) for line in regex_pattern.finditer(text)]
+    if 'if' in text and 'else' in text:
+      pattern = "(?:\\{{) ?(?:'|\").*(?:'|\") if (.*) (?:is|==) ?.* else .*?(?:\\}})"
+    else:
+      pattern = "(?:\\{{)((?:.|\n)*?)(?:\\}})"
+    regex_pattern = regex_pattern = re.compile(pattern, re.MULTILINE)
+    return [line.group(1) for line in regex_pattern.finditer(text)]
 
 
 def is_rule_disabled(text: str, rule: Rule) -> bool:
